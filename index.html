@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>超威的地圖 Super Weather Maps</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <script type="text/javascript" src="js/index.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.js"></script>
+  
+  <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+  <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div id="map"></div>
+
+  <!-- 
+      The `defer` attribute causes the callback to execute after the full HTML
+      document has been parsed. For non-blocking uses, avoiding race conditions,
+      and consistent behavior across browsers, consider loading using Promises.
+      See https://developers.google.com/maps/documentation/javascript/load-maps-js-api
+      for more information.
+      -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAD7B4McxVoTcDeIa5tLXuAbWa7eL_j16o&callback=initMap&v=weekly&libraries=places"
+    defer></script>
+
+  <div id="timeline"></div>
+
+  <!--
+    <div id="showFlood">
+    <input type="checkbox" id="floodLayer" />
+    <label for="floodLayer">淹水潛勢圖</label>
+  </div>
+-->
+
+<nav class="sidebar close">
+  <header>
+    <div class="image-text">
+      <span class="image">
+        <img src="css/logo.png" alt="">
+      </span>
+
+      <div class="text logo-text">
+        <span class="name">超威的地圖</span>
+        <span class="profession">Super Weather Maps</span>
+      </div>
+    </div>
+
+    <i class='bx bx-chevron-right toggle'></i>
+  </header>
+
+  <div class="menu-bar">
+    <div class="menu">
+
+      <li class="search-box">
+        <i class='bx bx-search icon'></i>
+        <input id="inputtext" type="text" placeholder="Search ...">
+      </li>
+
+      <ul class="menu-links">
+        <li class="nav-link">
+          <button id="temperatureButton">
+            <i class='fi fi-rr-temperature-high icon'></i>
+            <span class="text nav-text">溫度</span>
+          </button>
+        </li>
+
+        <li class="nav-link">
+          <button id="rainfallButton">
+            <i class='fi fi-rr-raindrops icon'></i>
+            <span class="text nav-text">降水量</span>
+          </button>
+        </li>
+
+        <li class="nav-link">
+          <button id="cloudButton">
+            <i class='fi fi-rr-clouds icon'></i>
+            <span class="text nav-text">雲量</span>
+          </button>
+        </li>
+
+        <li class="nav-link">
+          <button id="windButton">
+            <i class='fi fi-rr-wind icon'></i>
+            <span class="text nav-text">風速</span>
+          </button>
+        </li>
+
+        <li class="nav-link">
+          <button id="humidityButton">
+            <i class='fi fi-rr-humidity icon'></i>
+            <span class="text nav-text">濕度</span>
+          </button>
+        </li>
+
+        <li class="nav-link">
+          <button id="uviButton">
+            <i class='fi fi-rr-sun icon'></i>
+            <span class="text nav-text">紫外線</span>
+          </button>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+
+</nav>
+
+<section class="home">
+  <div class="text">Dashboard Sidebar</div>
+</section>
+
+<!--<script>
+  const body = document.querySelector('body'),
+    sidebar = body.querySelector('nav'),
+    toggle = body.querySelector(".toggle"),
+    searchBtn = body.querySelector(".search-box");
+  toggle.addEventListener("click", () => {
+    sidebar.classList.toggle("close");
+  })
+  searchBtn.addEventListener("click", () => {
+    sidebar.classList.remove("close");
+  })
+  
+</script>-->
+
+
+<!--<div class="rightside" id="weatherside">
+  <button id="closeright">X</button>
+  <h1 id="city">City</h1>
+  <nav>
+      <h1 id="temp">Temperature</h1>
+      <ul>
+          <p id="weathericon"></p>
+          <p id="date"></p>
+          <p id="maxminT"></p>
+          <p id="des"></p>
+          <p></p>
+          <p></p>
+          <p></p>
+          <p></p>
+          <p></p>
+      </ul>
+  </nav>
+</div>-->
+<div class="rightside" id="weatherside">
+  <i class='bx bx-x rightclose' id="closeright"></i>
+  <div class="weather">
+      <div id="title">
+          <h1 id="city">嘉義市</h1>
+          <p id="date">11/15</p>
+      </div>
+      <div id="weathericon">
+          <img id="icon" src="https://openweathermap.org/img/wn/10d@4x.png" alt="Weather icon">
+          <div id="tempinfo">
+              <h1 id="temp">27°</h1>
+              <p id="maxminT">21° / 32°</p>
+              <p id="des">晴天</p>
+          </div>
+      </div>
+
+      <div class="weather-details">
+          <p><span class="label"><i class='fi fi-rr-raindrops icon'></i> 降水量</span> <span class="value" id="rain">12.49
+                  mm</span></p>
+          <p><span class="label"><i class='fi fi-rr-clouds icon'></i> 雲量</span> <span class="value" id="cloud">34 %</span>
+          </p>
+          <p><span class="label"><i class='fi fi-rr-wind icon'></i> 風速</span> <span class="value" id="wind">2.4 m/s</span>
+          </p>
+          <p><span class="label"><i class='fi fi-rr-humidity icon'></i> 濕度</span> <span class="value" id="hum">45 %</span>
+          </p>
+          <p><span class="label"><i class='fi fi-rr-sun icon'></i> 紫外線</span> <span class="value" id="uvi">2.5</span></p>
+      </div>
+  </div>
+</div>
+
+
+  <div id="rainfallColor">
+    <div class="color-box-container">
+      <div class="color-text">300</div>
+      <div class="color-box rain300"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">200</div>
+      <div class="color-box rain200"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">150</div>
+      <div class="color-box rain150"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">130</div>
+      <div class="color-box rain130"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">110</div>
+      <div class="color-box rain110"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">90</div>
+      <div class="color-box rain90"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">70</div>
+      <div class="color-box rain70"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">50</div>
+      <div class="color-box rain50"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">40</div>
+      <div class="color-box rain40"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">30</div>
+      <div class="color-box rain30"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">20</div>
+      <div class="color-box rain20"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">15</div>
+      <div class="color-box rain15"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">10</div>
+      <div class="color-box rain10"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">6</div>
+      <div class="color-box rain6"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">2</div>
+      <div class="color-box rain2"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">1</div>
+      <div class="color-box rain1"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">0</div>
+      <div class="color-box rain0"></div>
+    </div>
+  </div>
+
+  <div id="temperatureColor">
+    <div class="color-box-container">
+      <div class="color-text">35</div>
+      <div class="color-box temp35"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">30</div>
+      <div class="color-box temp30"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">25</div>
+      <div class="color-box temp25"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">20</div>
+      <div class="color-box temp20"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">15</div>
+      <div class="color-box temp15"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">10</div>
+      <div class="color-box temp10"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">5</div>
+      <div class="color-box temp5"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">0</div>
+      <div class="color-box temp0"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">-1</div>
+      <div class="color-box temp-1"></div>
+    </div>
+  </div>
+
+  <div id="cloudColor">
+    <div class="color-box-container">
+      <div class="color-text">100</div>
+      <div class="color-box cloud10"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">90</div>
+      <div class="color-box cloud9"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">80</div>
+      <div class="color-box cloud8"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">70</div>
+      <div class="color-box cloud7"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">60</div>
+      <div class="color-box cloud6"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">50</div>
+      <div class="color-box cloud5"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">40</div>
+      <div class="color-box cloud4"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">30</div>
+      <div class="color-box cloud3"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">20</div>
+      <div class="color-box cloud2"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">10</div>
+      <div class="color-box cloud1"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">0</div>
+      <div class="color-box cloud0"></div>
+    </div>
+  </div>
+
+  <div id="windColor">
+    <div class="color-box-container">
+      <div class="color-text">8</div>
+      <div class="color-box wind8"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">7</div>
+      <div class="color-box wind7"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">6</div>
+      <div class="color-box wind6"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">5</div>
+      <div class="color-box wind5"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">4</div>
+      <div class="color-box wind4"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">3</div>
+      <div class="color-box wind3"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">2</div>
+      <div class="color-box wind2"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">1</div>
+      <div class="color-box wind1"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">0</div>
+      <div class="color-box wind0"></div>
+    </div>
+  </div>
+
+  <div id="humidityColor">
+    <div class="color-box-container">
+      <div class="color-text">100</div>
+      <div class="color-box hum100"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">90</div>
+      <div class="color-box hum90"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">80</div>
+      <div class="color-box hum80"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">70</div>
+      <div class="color-box hum70"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">60</div>
+      <div class="color-box hum60"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">50</div>
+      <div class="color-box hum50"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">40</div>
+      <div class="color-box hum40"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">30</div>
+      <div class="color-box hum30"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">20</div>
+      <div class="color-box hum20"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">10</div>
+      <div class="color-box hum10"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">0</div>
+      <div class="color-box hum0"></div>
+    </div>
+  </div>
+
+  <div id="uviColor">
+    <div class="color-box-container">
+      <div class="color-text">11</div>
+      <div class="color-box uvi11"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">8</div>
+      <div class="color-box uvi8"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">6</div>
+      <div class="color-box uvi6"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">3</div>
+      <div class="color-box uvi3"></div>
+    </div>
+    <div class="color-box-container">
+      <div class="color-text">0</div>
+      <div class="color-box uvi0"></div>
+    </div>
+  </div>
+</body>
+
+</html>
